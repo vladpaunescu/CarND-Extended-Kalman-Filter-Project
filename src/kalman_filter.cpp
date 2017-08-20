@@ -54,7 +54,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	VectorXd y = z - z_pred;
 
 	// phi normalization
-	y[1] = y[1] < -M_PI ? M_PI + fmod(y[1] + M_PI, 2 * M_PI) : fmod(y[1] + M_PI, 2 * M_PI) - M_PI;
+	// Kalman filter is expecting small angle values between the range -pi and pi.
+	if (y[1] < -M_PI) {
+		 y[1] = M_PI + fmod(y[1] + M_PI, 2 * M_PI);
+	} else {
+		y[1] = fmod(y[1] + M_PI, 2 * M_PI) - M_PI;
+	}
 
 	// internal update
 	UpdateInternal(y);
@@ -68,20 +73,21 @@ VectorXd KalmanFilter::h(const VectorXd& predicted_state) {
 	double vx = predicted_state[2];
 	double vy = predicted_state[3];
 
-	VectorXd projected_state = VectorXd(3);
-	projected_state << 0, 0, 0;
+	VectorXd h_proj = VectorXd(3);
+	h_proj << 0, 0, 0;
 
+	// check division by 0
 	if(px == 0 && py == 0) {
-		return projected_state;
+		return h_proj;
 	}
 
 	double rho = sqrt(px * px + py * py);
 	double phi = atan2(py, px);
-	double rho_dot = ((px * vx) + (py * vy)) / rho;
+	double rho_dot = (px * vx + py * vy) / rho;
 
-	projected_state << rho, phi, rho_dot;
+	h_proj << rho, phi, rho_dot;
 
-	return projected_state;
+	return h_proj;
 }
 
 // common update step given the error
