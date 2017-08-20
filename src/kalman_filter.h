@@ -23,6 +23,7 @@ public:
   // measurement covariance matrix
   Eigen::MatrixXd R_;
 
+
   /**
    * Constructor
    */
@@ -63,6 +64,18 @@ public:
    * @param z The measurement at k+1
    */
   void UpdateEKF(const Eigen::VectorXd &z);
+
+private:
+  /**
+   * Computes extended h.
+   */
+  Eigen::VectorXd h(const Eigen::VectorXd& predicted_state);
+
+
+  /* internal state update
+   *
+   */
+  void UpdateInternal(const Eigen::VectorXd& y);
 
 };
 

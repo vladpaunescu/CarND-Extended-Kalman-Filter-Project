@@ -55,6 +55,7 @@ int main()
         
         if (event == "telemetry") {
           // j[1] is the data JSON object
+        	  std::cout << "Here!!!" << std::endl;
           
           string sensor_measurment = j[1]["sensor_measurement"];
           
@@ -125,6 +126,8 @@ int main()
     	  estimations.push_back(estimate);
 
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
+
+    	  std::cout << "Here!!!" << std::endl;
 
           json msgJson;
           msgJson["estimate_x"] = p_x;
